@@ -1,6 +1,6 @@
 # **********************************************************************
 #
-# Copyright (c) 2003-2017 ZeroC, Inc. All rights reserved.
+# Copyright (c) 2003-2016 ZeroC, Inc. All rights reserved.
 #
 # This copy of Ice is licensed to you under the terms described in the
 # ICE_LICENSE file included in this distribution.
@@ -60,7 +60,7 @@
 
 Name: %{?nameprefix}ice
 Version: 3.7a4
-Summary: Comprehensive RPC framework with support for C++, .NET, Java, Python, JavaScript and more.
+Summary: Comprehensive RPC framework with support for C++, Java, JavScript, Python and more.
 Release: 1%{?dist}
 %if "%{?ice_license}"
 License: %{ice_license}
@@ -115,7 +115,7 @@ Requires: java
 %description -n %{?nameprefix}icegridgui
 The IceGrid service helps you locate, deploy and manage Ice servers.
 
-The IceGrid GUI give you complete control over your deployed applications.
+IceGridGUI gives you complete control over your deployed applications.
 Activities such as starting a server or modifying a configuration setting
 are just a mouse click away.
 
