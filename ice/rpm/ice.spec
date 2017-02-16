@@ -10,7 +10,7 @@
 %define systemd 1
 %define systemdpkg systemd
 %define shadow shadow-utils
-%define javapackagestools jpackage-utils
+%define javapackagestools javapackages-tools
 %define phpdevel php-devel
 %define pythondevel python-devel
 %define expatdevel expat-devel
@@ -20,9 +20,6 @@
 %define pythondir %{python_sitearch}
 %define jarVersion 3.7.0-alpha4
 
-%if "%{dist}" == ".el7"
-  %define javapackagestools javapackages-tools
-%endif
 %if "%{dist}" == ".amzn1"
   %define systemd 0
 %endif
