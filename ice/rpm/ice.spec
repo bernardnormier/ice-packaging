@@ -511,7 +511,6 @@ done
 # Cleanup extra files
 rm -f $RPM_BUILD_ROOT%{_libdir}/libIceStormService.so
 rm -f $RPM_BUILD_ROOT%{_libdir}/libGlacier2CryptPermissionsVerifier.so
-rm -f $RPM_BUILD_ROOT%{_bindir}/slice2cs
 rm -f $RPM_BUILD_ROOT%{_bindir}/slice2confluence
 rm -f $RPM_BUILD_ROOT%{_bindir}/slice2js
 rm -f $RPM_BUILD_ROOT%{_bindir}/slice2objc
@@ -840,6 +839,8 @@ exit 0
 %defattr(-, root, root, -)
 %{_bindir}/slice2cpp
 %{_mandir}/man1/slice2cpp.1*
+%{_bindir}/slice2cs
+%{_mandir}/man1/slice2cs.1*
 %{_bindir}/slice2java
 %{_mandir}/man1/slice2java.1*
 %{_bindir}/slice2html
