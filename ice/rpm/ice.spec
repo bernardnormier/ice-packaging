@@ -448,6 +448,13 @@ your application logic.
 
 cd $RPM_BUILD_DIR/Ice-%{version}
 
+#
+# Recommended flags for optimized hardened build
+#
+export CXXFLAGS="-O3 -g"
+#export CXXFLAGS="%{optflags}"
+#export LDFLAGS="%{__global_ldflags}"
+
 %ifarch %{core_arches}
     %if %{cppx86}
 	make %{makebuildopts} PLATFORMS=x86 LANGUAGES="cpp" srcs
