@@ -22,6 +22,8 @@
 
 %if "%{dist}" == ".amzn1"
   %define systemd 0
+  %define pythondevel python27-devel
+  %define pythondir %{python27_sitearch}
 %endif
 %if "%{dist}" == ".sles12"
   %define systemdpkg systemd-rpm-macros
@@ -59,7 +61,7 @@
 
 Name: %{?nameprefix}ice
 Version: 3.7a4
-Summary: Comprehensive RPC framework with support for C++, Java, JavScript, Python and more.
+Summary: Comprehensive RPC framework with support for C++, Java, JavaScript, Python and more.
 Release: 1%{?dist}
 %if "%{?ice_license}"
 License: %{ice_license}
@@ -74,7 +76,7 @@ Source1: Ice-rpmbuild-%{version}.tar.gz
 
 BuildRoot: %{_tmppath}/ice-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: openssl-devel, mcpp-devel, lmdb-devel, %{bzip2devel} %{expatdevel} %{phpdevel} %{pythondevel} %{javapackagestools}
+BuildRequires: openssl-devel, mcpp-devel, lmdb-devel, %{bzip2devel}, %{expatdevel}, %{phpdevel}, %{pythondevel}, %{javapackagestools}
 %if 0%{?biarch}
 BuildRequires: openssl-devel(x86-32), mcpp-devel(x86-32), lmdb-devel(x86-32), %{bzip2devel}(x86-32), %{expatdevel}(x86-32)
 %endif
@@ -1084,6 +1086,8 @@ exit 0
 %endif # core_arches
 
 %changelog
+* Thu Feb 16 2017 Bernard Normier <bernard@zeroc.com> 3.7a4
+- Added python-ice package, and slice2py + slice2cs in ice-compilers
 
 * Wed Sep 14 2016 José Gutiérrez de la Concha <jose@zeroc.com> 3.7a3
 - Rename ice-utils-java as icegridgui
