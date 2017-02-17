@@ -452,7 +452,7 @@ cd $RPM_BUILD_DIR/Ice-%{version}
 # Recommended flags for optimized hardened build
 #
 export CXXFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+export LDFLAGS="%{?__global_ldflags}"
 
 %ifarch %{core_arches}
     %if %{cppx86}
