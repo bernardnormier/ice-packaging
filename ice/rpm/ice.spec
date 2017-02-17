@@ -17,11 +17,13 @@
 %define bzip2devel bzip2-devel
 %define phpdir %{_datadir}/php
 %define phplibdir %{_libdir}/php/modules
+%define pythonname python
 %define pythondir %{python_sitearch}
 %define jarVersion 3.7.0-alpha4
 
 %if "%{dist}" == ".amzn1"
   %define systemd 0
+  %define pythonname python27
   %define pythondevel python27-devel
   %define pythondir %{python27_sitearch}
 %endif
@@ -44,8 +46,8 @@
 
 %define rpmbuildfiles $RPM_BUILD_DIR/Ice-rpmbuild-%{version}
 
-%define makebuildopts CONFIGS="shared cpp11-shared" OPTIMIZE=yes V=1 %{runpath} %{?_smp_mflags}
-%define makeinstallopts CONFIGS="shared cpp11-shared" OPTIMIZE=yes V=1 %{runpath} DESTDIR=$RPM_BUILD_ROOT prefix=%{_prefix} install_bindir=%{_bindir} install_libdir=%{_libdir} install_slicedir=%{_datadir}/ice/slice install_docdir=%{_datadir}/ice  install_includedir=%{_includedir} install_mandir=%{_mandir} install_configdir=%{_datadir}/ice install_javadir=%{_javadir} install_phplibdir=%{phplibdir} install_phpdir=%{phpdir} install_pythondir=%{pythondir}
+%define makebuildopts CONFIGS="shared cpp11-shared" PYTHON=%{pythonname} OPTIMIZE=yes V=1 %{runpath} %{?_smp_mflags}
+%define makeinstallopts CONFIGS="shared cpp11-shared" PYTHON=%{pythonname} OPTIMIZE=yes V=1 %{runpath} DESTDIR=$RPM_BUILD_ROOT prefix=%{_prefix} install_bindir=%{_bindir} install_libdir=%{_libdir} install_slicedir=%{_datadir}/ice/slice install_docdir=%{_datadir}/ice  install_includedir=%{_includedir} install_mandir=%{_mandir} install_configdir=%{_datadir}/ice install_javadir=%{_javadir} install_phplibdir=%{phplibdir} install_phpdir=%{phpdir} install_pythondir=%{pythondir}
 
 %define core_arches %{ix86} x86_64
 
@@ -160,7 +162,7 @@ Requires: %{?nameprefix}glacier2%{?_isa} = %{version}-%{release}
 Requires: %{?nameprefix}icegrid%{?_isa} = %{version}-%{release}
 Requires: %{?nameprefix}icepatch2%{?_isa} = %{version}-%{release}
 Requires: php-%{?nameprefix}ice%{?_isa} = %{version}-%{release}
-Requires: python-%{?nameprefix}ice%{?_isa} = %{version}-%{release}
+Requires: %{pythonname}-%{?nameprefix}ice%{?_isa} = %{version}-%{release}
 Requires: lib%{?nameprefix}ice3.7-c++%{?_isa} = %{version}-%{release}
 Requires: lib%{?nameprefix}ice-java = %{version}-%{release}
 Requires: %{?nameprefix}icegridgui = %{version}-%{release}
@@ -435,13 +437,13 @@ your application logic.
 #
 # python-ice package
 #
-%package -n python-%{?nameprefix}ice
+%package -n %{pythonname}-%{?nameprefix}ice
 Summary: Python extension for Ice.
 Group: System Environment/Libraries
 Obsoletes: ice-python < 3.6
 Requires: lib%{?nameprefix}ice3.7-c++%{?_isa} = %{version}-%{release}
-Requires: python
-%description -n python-%{?nameprefix}ice
+Requires: %{pythonname}
+%description -n %{pythonname}-%{?nameprefix}ice
 This package contains a Python extension for communicating with Ice.
 
 Ice is a comprehensive RPC framework that helps you network your software
@@ -501,7 +503,7 @@ cd $RPM_BUILD_DIR/Ice-%{version}
 		  %{?nameprefix}ice-utils \
 		  %{?nameprefix}ice-compilers \
 		  php-%{?nameprefix}ice \
-                  python-%{?nameprefix}ice" 
+		  %{pythonname}-%{?nameprefix}ice"
 
 	make %{?_smp_mflags} %{makeinstallopts} PLATFORMS=x64 LANGUAGES="cpp php python" install
     %endif
@@ -1075,11 +1077,11 @@ exit 0
 #
 # python-ice package
 #
-%files -n python-%{?nameprefix}ice
+%files -n %{pythonname}-%{?nameprefix}ice
 %defattr(-, root, root, -)
 %{pythondir}/Ice*
 %{pythondir}/Glacier2*
-%{_defaultdocdir}/python-%{?nameprefix}ice-%{version}
+%{_defaultdocdir}/%{pythonname}-%{?nameprefix}ice-%{version}
 
 %endif # ! cppx86
 
