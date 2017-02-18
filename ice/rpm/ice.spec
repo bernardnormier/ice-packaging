@@ -87,6 +87,8 @@ Ice is a comprehensive RPC framework that helps you build
 distributed applications with minimal effort using familiar
 object-oriented idioms.
 
+%debug_package
+
 #
 # Arch-independent packages
 #
