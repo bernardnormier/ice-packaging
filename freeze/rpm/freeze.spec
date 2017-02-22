@@ -42,8 +42,8 @@ License: GPLv2
 %endif
 Vendor: ZeroC, Inc.
 URL: https://zeroc.com/
-#Source: https://github.com/zeroc-ice/freeze/archive/tag/%{name}-%{version}.tar.gz
-Source: %{name}.tar.gz
+Source0: https://github.com/zeroc-ice/freeze/archive/master/%{name}-%{version}.tar.gz
+Source1: https://github.com/zeroc-ice/ice/archive/master/%{name}-ice-%{version}.tar.gz
 BuildRequires: mcpp-devel, %{bzip2devel}, %{expatdevel}, %{libdbcxxdevel}
 %description
 Not used
@@ -105,7 +105,9 @@ This package contains Freeze utilities.
 Freeze provides persistent storage for Ice objects.
 
 %prep
-%setup -q -n %{name}
+%setup -q -n %{name}-master -a 1
+rmdir ice
+mv ice-master ice
 
 %build
 # recommended flags for optimized hardened build
