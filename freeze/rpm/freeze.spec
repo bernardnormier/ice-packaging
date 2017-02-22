@@ -7,9 +7,19 @@
 %define expatdevel expat-devel
 %define bzip2devel bzip2-devel
 
+%define libdbcxx libdb-cxx
+%define libdbcxxdevel libdb-cxx-devel
+
 %if "%{dist}" == ".sles12"
   %define expatdevel libexpat-devel
   %define bzip2devel libbz2-devel
+  %define libdbcxx db53
+  %define libdbcxxdevel db53-devel
+%endif
+
+%if "%{dist}" == ".amzn1"
+  %define libdbcxx db53
+  %define libdbcxxdevel db53-devel
 %endif
 
 %if "%{_prefix}" == "/usr"
@@ -19,7 +29,7 @@
 %endif
 
 %define makebuildopts CONFIGS="shared" OPTIMIZE=yes V=1 %{runpath} %{?_smp_mflags}
-%define makeinstallopts CONFIGS="shared" OPTIMIZE=yes V=1 %{runpath} DESTDIR=$RPM_BUILD_ROOT prefix=%{_prefix} install_bindir=%{_bindir} install_libdir=%{_libdir} install_includedir=%{_includedir} install_mandir=%{_mandir}
+%define makeinstallopts CONFIGS="shared" OPTIMIZE=yes V=1 %{runpath} DESTDIR=%{buildroot} prefix=%{_prefix} install_bindir=%{_bindir} install_libdir=%{_libdir} install_includedir=%{_includedir} install_mandir=%{_mandir}
 
 Name: %{?nameprefix}freeze
 Version: 3.7a4
@@ -32,8 +42,11 @@ License: GPLv2
 %endif
 Vendor: ZeroC, Inc.
 URL: https://zeroc.com/
-Source: https://github.com/zeroc-ice/freeze/archive/v3.7.0-alpha4/%{name}-%{version}.tar.gz
-BuildRequires: mcpp-devel, %{bzip2devel}, %{expatdevel}
+#Source: https://github.com/zeroc-ice/freeze/archive/tag/%{name}-%{version}.tar.gz
+Source: %{name}.tar.gz
+BuildRequires: mcpp-devel, %{bzip2devel}, %{expatdevel}, %{libdbcxxdevel}
+%description
+Not used
 
 #
 # Enable debug package except if it's already enabled
@@ -49,9 +62,9 @@ BuildRequires: mcpp-devel, %{bzip2devel}, %{expatdevel}
 Summary: Freeze for C++ run-time library.
 Group: System Environment/Libraries
 Requires: lib%{?nameprefix}ice3.7-c++%{?_isa} = %{version}-%{release}
+Requires: %{libdbcxx}%{?_isa} >= 5.3
 %description -n lib%{?nameprefix}freeze3.7-c++
 This package contains the C++ run-time library for the Freeze service.
-
 Freeze provides persistent storage for Ice objects.
 
 #
@@ -66,7 +79,6 @@ Requires: %{?nameprefix}freeze-compilers(x86-64) = %{version}-%{release}
 %description -n lib%{?nameprefix}freeze-c++-devel
 This package contains the library and header files needed for developing
 Freeze applications in C++.
-
 Freeze provides persistent storage for Ice objects.
 
 #
@@ -78,7 +90,6 @@ Group: Development/Tools
 Requires: %{?nameprefix}ice-slice = %{version}-%{release}
 %description -n %{?nameprefix}freeze-compilers
 This package contains Slice compilers for developing Freeze applications.
-
 Freeze provides persistent storage for Ice objects.
 
 #
@@ -91,11 +102,10 @@ Obsoletes: ice-utils < 3.6
 Requires: lib%{?nameprefix}freeze3.7-c++%{?_isa} = %{version}-%{release}
 %description -n %{?nameprefix}freeze-utils
 This package contains Freeze utilities.
-
 Freeze provides persistent storage for Ice objects.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n %{name}
 
 %build
 # recommended flags for optimized hardened build
@@ -106,48 +116,45 @@ make -C ice/cpp %{makebuildopts} IceXML
 make -C cpp %{makebuildopts} srcs 
 
 %install
-make %{makeinstallopts} install
+make -C cpp %{makeinstallopts} install
 
 #
 # libfreezeM.m-c++ package
 #
 %files -n lib%{?nameprefix}freeze3.7-c++
+%license LICENSE
 %{_libdir}/libFreeze.so.*
-%{_defaultdocdir}/lib%{?nameprefix}freeze3.7-c++-%{version}
 %post -n lib%{?nameprefix}freeze3.7-c++ -p /sbin/ldconfig
-%postun -n lib%{?nameprefix}freeze3.7-c++
-/sbin/ldconfig
-exit 0
+%postun -n lib%{?nameprefix}freeze3.7-c++ -p /sbin/ldconfig
 
 #
 # libfreeze-c++-devel package
 #
 %files -n lib%{?nameprefix}freeze-c++-devel
+%license LICENSE
 %{_libdir}/libFreeze.so
 %{_includedir}/Freeze
-%{_defaultdocdir}/lib%{?nameprefix}freeze-c++-devel-%{version}
 
 #
 # freeze-compilers package
 #
 %files -n %{?nameprefix}freeze-compilers
+%license LICENSE
 %{_bindir}/slice2freeze
 %{_mandir}/man1/slice2freeze.1*
 %{_bindir}/slice2freezej
 %{_mandir}/man1/slice2freezej.1*
-%{_defaultdocdir}/%{?nameprefix}freeze-compilers-%{version}
 
 #
 # freeze-utils package
 #
 %files -n %{?nameprefix}freeze-utils
+%license LICENSE
 %{_bindir}/dumpdb
 %{_mandir}/man1/dumpdb.1*
 %{_bindir}/transformdb
 %{_mandir}/man1/transformdb.1*
-%{_defaultdocdir}/%{?nameprefix}freeze-utils-%{version}
-
 
 %changelog
-* Tue Feb 21 2017 Bernard Normier <bernard@zeroc.com> 3.7.0-alpha4
+* Tue Feb 21 2017 Bernard Normier <bernard@zeroc.com> 3.7a4
 - Initial package
