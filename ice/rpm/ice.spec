@@ -88,7 +88,7 @@ Not used
 %debug_package
 %endif
 
-%ifarch x86_64
+%ifarch x86_64 # We build noarch packages only on x86_64
 
 #
 # ice-slice package
@@ -256,14 +256,13 @@ with minimal effort. Ice takes care of all interactions with low-level
 network programming interfaces and allows you to focus your efforts on
 your application logic.
 
-%ifarch x86_64
-
 #
 # ice-compilers package
 #
 %package -n %{?nameprefix}ice-compilers
 Summary: Slice compilers for developing Ice applications
 Group: Development/Tools
+BuildArch: x86_64
 Requires: %{?nameprefix}ice-slice = %{version}-%{release}
 %description -n %{?nameprefix}ice-compilers
 This package contains Slice compilers for developing Ice applications.
@@ -279,6 +278,7 @@ your application logic.
 %package -n %{?nameprefix}ice-utils
 Summary: Ice utilities and admin tools.
 Group: Applications/System
+BuildArch: x86_64
 Obsoletes: ice-utils < 3.6
 %description -n %{?nameprefix}ice-utils
 This package contains Ice utilities and admin tools.
@@ -294,6 +294,7 @@ your application logic.
 %package -n %{?nameprefix}icegrid
 Summary: Locate, deploy, and manage Ice servers.
 Group: System Environment/Daemons
+BuildArch: x86_64
 Obsoletes: ice-servers < 3.6
 Requires: %{?nameprefix}ice-utils = %{version}-%{release}
 %if "%{?liblmdb}" != ""
@@ -327,6 +328,7 @@ your application logic.
 %package -n %{?nameprefix}glacier2
 Summary: Glacier2 router.
 Group: System Environment/Daemons
+BuildArch: x86_64
 Obsoletes: ice-servers < 3.6
 # Requirements for the users
 Requires(pre): %{shadow}
@@ -359,6 +361,7 @@ your application logic.
 %package -n %{?nameprefix}icepatch2
 Summary: File distribution and patching.
 Group: System Environment/Daemons
+BuildArch: x86_64
 Obsoletes: ice-servers < 3.6
 Requires: %{?nameprefix}ice-utils%{?_isa} = %{version}-%{release}
 # Requirements for the users
@@ -390,6 +393,7 @@ your application logic.
 %package -n php-%{?nameprefix}ice
 Summary: PHP extension for Ice.
 Group: System Environment/Libraries
+BuildArch: x86_64
 Obsoletes: ice-php < 3.6
 Requires: lib%{?nameprefix}ice3.7-c++%{?_isa} = %{version}-%{release}
 %if "%{dist}" == ".sles12"
@@ -418,6 +422,7 @@ your application logic.
 %package -n %{pythonname}-%{?nameprefix}ice
 Summary: Python extension for Ice.
 Group: System Environment/Libraries
+BuildArch: x86_64
 Obsoletes: ice-python < 3.6
 Requires: lib%{?nameprefix}ice3.7-c++%{?_isa} = %{version}-%{release}
 Requires: %{pythonname}
@@ -430,35 +435,36 @@ network programming interfaces and allows you to focus your efforts on
 your application logic.
 
 
-%endif # x86_64
-
 %prep
 %setup -q -n %{name}-%{archive_dir_suffix} -a 1
 
 %build
-
 #
 # Recommended flags for optimized hardened build
 #
 export CXXFLAGS="%{optflags}"
 export LDFLAGS="%{?__global_ldflags}"
 
+%ifarch x86_64
+    make %{makebuildopts} PLATFORMS=x64 LANGUAGES="cpp java php python" srcs
+%endif
+
 %ifarch %{ix86}
     make %{makebuildopts} PLATFORMS=x86 LANGUAGES="cpp" srcs
-%else
-    make %{makebuildopts} PLATFORMS=x64 LANGUAGES="cpp java php python" srcs
 %endif
 
 %install
 
-%ifarch %{ix86}
-    make -C cpp    %{?_smp_mflags} %{makeinstallopts} PLATFORMS=x86 install
-%else
+%ifarch x86_64
     make           %{?_smp_mflags} %{makeinstallopts} install-slice
     make -C cpp    %{?_smp_mflags} %{makeinstallopts} PLATFORMS=x64 install
     make -C php    %{?_smp_mflags} %{makeinstallopts} PLATFORMS=x64 install
     make -C python %{?_smp_mflags} %{makeinstallopts} PLATFORMS=x64 install
     make -C java   %{?_smp_mflags} %{makeinstallopts} install-icegridgui
+%endif
+
+%ifarch %{ix86}
+    make -C cpp    %{?_smp_mflags} %{makeinstallopts} PLATFORMS=x86 install
 %endif
 
 # Cleanup extra files
@@ -475,16 +481,8 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/man1/slice2rb.1
 # TODO: keep with Python >= 3.5
 rm -f $RPM_BUILD_ROOT%{pythondir}/IceFuture.py
 
-%ifarch %{ix86}
-# These directories and files aren't needed in the x86 build.
-rm -f $RPM_BUILD_ROOT%{_libdir}/libGlacier2CryptPermissionsVerifier.so*
-rm -f $RPM_BUILD_ROOT%{_libdir}/libIceXML*.so*
-rm -f $RPM_BUILD_ROOT%{_bindir}/slice2*
-rm -rf $RPM_BUILD_ROOT%{_includedir}
-rm -rf $RPM_BUILD_ROOT%{_mandir}
-rm -rf $RPM_BUILD_ROOT%{_datadir}/ice
+%ifarch x86_64
 
-%else
 #
 # php ice.ini
 #
@@ -519,7 +517,17 @@ if [ -n "$JARSIGNER_KEYSTORE" ]; then
     jarsigner -keystore $JARSIGNER_KEYSTORE -storepass "$JARSIGNER_KEYSTORE_PASSWORD" $RPM_BUILD_ROOT%{_javadir}/icegridgui.jar $JARSIGNER_KEYSTORE_ALIAS -tsa http://timestamp.digicert.com
 fi
 
-%endif # !ix86
+%else
+
+# These directories and files aren't needed in the x86 build.
+rm -f $RPM_BUILD_ROOT%{_libdir}/libGlacier2CryptPermissionsVerifier.so*
+rm -f $RPM_BUILD_ROOT%{_libdir}/libIceXML*.so*
+rm -f $RPM_BUILD_ROOT%{_bindir}/slice2*
+rm -rf $RPM_BUILD_ROOT%{_includedir}
+rm -rf $RPM_BUILD_ROOT%{_mandir}
+rm -rf $RPM_BUILD_ROOT%{_datadir}/ice
+
+%endif # x86_64
 
 
 %ifarch x86_64
@@ -670,8 +678,6 @@ exit 0
 %postun -n lib%{?nameprefix}icestorm3.7
 /sbin/ldconfig
 exit 0
-
-%ifarch x86_64
 
 #
 # ice-compilers package
@@ -905,8 +911,6 @@ exit 0
 %doc %{rpmbuildfiles}/README.Linux
 %{pythondir}/Ice*
 %{pythondir}/Glacier2*
-
-%endif # x86_64
 
 %changelog
 * Fri Feb 17 2017 Bernard Normier <bernard@zeroc.com> 3.7a4
