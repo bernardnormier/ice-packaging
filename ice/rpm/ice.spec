@@ -57,7 +57,7 @@
 %endif
 
 %define makebuildopts CONFIGS="shared cpp11-shared" PYTHON=%{pythonname} OPTIMIZE=yes V=1 %{runpath} %{?_smp_mflags}
-%define makeinstallopts CONFIGS="shared cpp11-shared" PYTHON=%{pythonname} OPTIMIZE=yes V=1 %{runpath} DESTDIR=$RPM_BUILD_ROOT prefix=%{_prefix} install_bindir=%{_bindir} install_libdir=%{_libdir} install_slicedir=%{_datadir}/ice/slice install_docdir=%{_datadir}/ice  install_includedir=%{_includedir} install_mandir=%{_mandir} install_configdir=%{_datadir}/ice install_javadir=%{_javadir} install_phplibdir=%{phplibdir} install_phpdir=%{phpdir} install_pythondir=%{pythondir}
+%define makeinstallopts CONFIGS="shared cpp11-shared" PYTHON=%{pythonname} OPTIMIZE=yes V=1 %{runpath} DESTDIR=%{buildroot} prefix=%{_prefix} install_bindir=%{_bindir} install_libdir=%{_libdir} install_slicedir=%{_datadir}/ice/slice install_includedir=%{_includedir} install_mandir=%{_mandir} install_configdir=%{_datadir}/ice install_javadir=%{_javadir} install_phplibdir=%{phplibdir} install_phpdir=%{phpdir} install_pythondir=%{pythondir}
 
 Name: %{?nameprefix}ice
 Version: 3.7a4
@@ -464,18 +464,18 @@ export LDFLAGS="%{?__global_ldflags}"
 %endif
 
 # Cleanup extra files
-rm -f $RPM_BUILD_ROOT%{_libdir}/libIceStormService.so
-rm -f $RPM_BUILD_ROOT%{_libdir}/libGlacier2CryptPermissionsVerifier.so
-rm -f $RPM_BUILD_ROOT%{_bindir}/slice2confluence
-rm -f $RPM_BUILD_ROOT%{_bindir}/slice2js
-rm -f $RPM_BUILD_ROOT%{_bindir}/slice2objc
-rm -f $RPM_BUILD_ROOT%{_bindir}/slice2rb
-rm -f $RPM_BUILD_ROOT%{_mandir}/man1/slice2js.1
-rm -f $RPM_BUILD_ROOT%{_mandir}/man1/slice2objc.1
-rm -f $RPM_BUILD_ROOT%{_mandir}/man1/slice2rb.1
+rm -f %{buildroot}%{_libdir}/libIceStormService.so
+rm -f %{buildroot}%{_libdir}/libGlacier2CryptPermissionsVerifier.so
+rm -f %{buildroot}%{_bindir}/slice2confluence
+rm -f %{buildroot}%{_bindir}/slice2js
+rm -f %{buildroot}%{_bindir}/slice2objc
+rm -f %{buildroot}%{_bindir}/slice2rb
+rm -f %{buildroot}%{_mandir}/man1/slice2js.1
+rm -f %{buildroot}%{_mandir}/man1/slice2objc.1
+rm -f %{buildroot}%{_mandir}/man1/slice2rb.1
 
 # TODO: keep with Python >= 3.5
-rm -f $RPM_BUILD_ROOT%{pythondir}/IceFuture.py
+rm -f %{buildroot}%{pythondir}/IceFuture.py
 
 %ifarch x86_64
 
@@ -483,45 +483,45 @@ rm -f $RPM_BUILD_ROOT%{pythondir}/IceFuture.py
 # php ice.ini
 #
 %if "%{dist}" == ".sles12"
-    mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/php5/conf.d
-    cp -p %{rpmbuildfiles}/ice.ini $RPM_BUILD_ROOT%{_sysconfdir}/php5/conf.d
+    mkdir -p %{buildroot}%{_sysconfdir}/php5/conf.d
+    cp -p %{rpmbuildfiles}/ice.ini %{buildroot}%{_sysconfdir}/php5/conf.d
 %else
-    mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/php.d
-    cp -p %{rpmbuildfiles}/ice.ini $RPM_BUILD_ROOT%{_sysconfdir}/php.d
+    mkdir -p %{buildroot}%{_sysconfdir}/php.d
+    cp -p %{rpmbuildfiles}/ice.ini %{buildroot}%{_sysconfdir}/php.d
 %endif
 
 #
 # initrd files (for servers)
 #
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}
-cp %{rpmbuildfiles}/*.conf $RPM_BUILD_ROOT%{_sysconfdir}
+mkdir -p %{buildroot}%{_sysconfdir}
+cp %{rpmbuildfiles}/*.conf %{buildroot}%{_sysconfdir}
 for i in icegridregistry icegridnode glacier2router
 do
     %if %{systemd}
-	install -p -D %{rpmbuildfiles}/$i.service $RPM_BUILD_ROOT%{_unitdir}/$i.service
+	install -p -D %{rpmbuildfiles}/$i.service %{buildroot}%{_unitdir}/$i.service
     %else
-	install -p -D %{rpmbuildfiles}/$i.%{_vendor} $RPM_BUILD_ROOT%{_initrddir}/$i
+	install -p -D %{rpmbuildfiles}/$i.%{_vendor} %{buildroot}%{_initrddir}/$i
     %endif
 done
 
 #
 # IceGridGUI
 #
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
-cp -p %{rpmbuildfiles}/icegridgui $RPM_BUILD_ROOT%{_bindir}/icegridgui
+mkdir -p %{buildroot}%{_bindir}
+cp -p %{rpmbuildfiles}/icegridgui %{buildroot}%{_bindir}/icegridgui
 if [ -n "$JARSIGNER_KEYSTORE" ]; then
-    jarsigner -keystore $JARSIGNER_KEYSTORE -storepass "$JARSIGNER_KEYSTORE_PASSWORD" $RPM_BUILD_ROOT%{_javadir}/icegridgui.jar $JARSIGNER_KEYSTORE_ALIAS -tsa http://timestamp.digicert.com
+    jarsigner -keystore $JARSIGNER_KEYSTORE -storepass "$JARSIGNER_KEYSTORE_PASSWORD" %{buildroot}%{_javadir}/icegridgui.jar $JARSIGNER_KEYSTORE_ALIAS -tsa http://timestamp.digicert.com
 fi
 
 %else
 
 # These directories and files aren't needed in the x86 build.
-rm -f $RPM_BUILD_ROOT%{_libdir}/libGlacier2CryptPermissionsVerifier.so*
-rm -f $RPM_BUILD_ROOT%{_libdir}/libIceXML*.so*
-rm -f $RPM_BUILD_ROOT%{_bindir}/slice2*
-rm -rf $RPM_BUILD_ROOT%{_includedir}
-rm -rf $RPM_BUILD_ROOT%{_mandir}
-rm -rf $RPM_BUILD_ROOT%{_datadir}/ice
+rm -f %{buildroot}%{_libdir}/libGlacier2CryptPermissionsVerifier.so*
+rm -f %{buildroot}%{_libdir}/libIceXML*.so*
+rm -f %{buildroot}%{_bindir}/slice2*
+rm -rf %{buildroot}%{_includedir}
+rm -rf %{buildroot}%{_mandir}
+rm -rf %{buildroot}%{_datadir}/ice
 
 %endif # x86_64
 
@@ -827,8 +827,8 @@ exit 0
 %if "%{_prefix}" == "/usr"
   getent group ice > /dev/null || groupadd -r ice
   getent passwd ice > /dev/null || \
-	 useradd -r -g ice -d %{_localstatedir}/lib/ice \
-	 -s /sbin/nologin -c "Ice Service account" ice
+         useradd -r -g ice -d %{_localstatedir}/lib/ice \
+         -s /sbin/nologin -c "Ice Service account" ice
   exit 0
 %endif
 
