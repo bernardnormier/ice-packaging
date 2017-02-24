@@ -34,26 +34,26 @@
 %define pythondir %{python_sitearch}
 
 %if "%{dist}" == ".amzn1"
-  %define systemd 0
-  %define pythonname python27
-  %define pythondevel python27-devel
-  %define pythondir %{python27_sitearch}
+   %define systemd 0
+   %define pythonname python27
+   %define pythondevel python27-devel
+   %define pythondir %{python27_sitearch}
 %endif
 %if "%{dist}" == ".sles12"
-  %define systemdpkg systemd-rpm-macros
-  %define phpdevel php5-devel
-  %define expatdevel libexpat-devel
-  %define bzip2devel libbz2-devel
-  %define liblmdb liblmdb-0_9_11
-  %define shadow shadow
-  %define phpdir %{_datadir}/php5
-  %define phplibdir %{_libdir}/php5/extensions
+   %define systemdpkg systemd-rpm-macros
+   %define phpdevel php5-devel
+   %define expatdevel libexpat-devel
+   %define bzip2devel libbz2-devel
+   %define liblmdb liblmdb-0_9_11
+   %define shadow shadow
+   %define phpdir %{_datadir}/php5
+   %define phplibdir %{_libdir}/php5/extensions
 %endif
 
 %if "%{_prefix}" == "/usr"
-%define runpath embedded_runpath=no
+   %define runpath embedded_runpath=no
 %else
-%define runpath embedded_runpath_prefix=%{_prefix}
+   %define runpath embedded_runpath_prefix=%{_prefix}
 %endif
 
 %define makebuildopts CONFIGS="shared cpp11-shared" PYTHON=%{pythonname} OPTIMIZE=yes V=1 %{runpath} %{?_smp_mflags}
@@ -256,13 +256,14 @@ with minimal effort. Ice takes care of all interactions with low-level
 network programming interfaces and allows you to focus your efforts on
 your application logic.
 
+%ifarch x86_64
+
 #
 # ice-compilers package
 #
 %package -n %{?nameprefix}ice-compilers
 Summary: Slice compilers for developing Ice applications
 Group: Development/Tools
-BuildArch: x86_64
 Requires: %{?nameprefix}ice-slice = %{version}-%{release}
 %description -n %{?nameprefix}ice-compilers
 This package contains Slice compilers for developing Ice applications.
@@ -278,7 +279,6 @@ your application logic.
 %package -n %{?nameprefix}ice-utils
 Summary: Ice utilities and admin tools.
 Group: Applications/System
-BuildArch: x86_64
 Obsoletes: ice-utils < 3.6
 %description -n %{?nameprefix}ice-utils
 This package contains Ice utilities and admin tools.
@@ -294,7 +294,6 @@ your application logic.
 %package -n %{?nameprefix}icegrid
 Summary: Locate, deploy, and manage Ice servers.
 Group: System Environment/Daemons
-BuildArch: x86_64
 Obsoletes: ice-servers < 3.6
 Requires: %{?nameprefix}ice-utils = %{version}-%{release}
 %if "%{?liblmdb}" != ""
@@ -328,7 +327,6 @@ your application logic.
 %package -n %{?nameprefix}glacier2
 Summary: Glacier2 router.
 Group: System Environment/Daemons
-BuildArch: x86_64
 Obsoletes: ice-servers < 3.6
 # Requirements for the users
 Requires(pre): %{shadow}
@@ -361,7 +359,6 @@ your application logic.
 %package -n %{?nameprefix}icepatch2
 Summary: File distribution and patching.
 Group: System Environment/Daemons
-BuildArch: x86_64
 Obsoletes: ice-servers < 3.6
 Requires: %{?nameprefix}ice-utils%{?_isa} = %{version}-%{release}
 # Requirements for the users
@@ -393,7 +390,6 @@ your application logic.
 %package -n php-%{?nameprefix}ice
 Summary: PHP extension for Ice.
 Group: System Environment/Libraries
-BuildArch: x86_64
 Obsoletes: ice-php < 3.6
 Requires: lib%{?nameprefix}ice3.7-c++%{?_isa} = %{version}-%{release}
 %if "%{dist}" == ".sles12"
@@ -422,7 +418,6 @@ your application logic.
 %package -n %{pythonname}-%{?nameprefix}ice
 Summary: Python extension for Ice.
 Group: System Environment/Libraries
-BuildArch: x86_64
 Obsoletes: ice-python < 3.6
 Requires: lib%{?nameprefix}ice3.7-c++%{?_isa} = %{version}-%{release}
 Requires: %{pythonname}
@@ -434,6 +429,7 @@ with minimal effort. Ice takes care of all interactions with low-level
 network programming interfaces and allows you to focus your efforts on
 your application logic.
 
+%endif #x86_64
 
 %prep
 %setup -q -n %{name}-%{archive_dir_suffix} -a 1
@@ -679,6 +675,8 @@ exit 0
 /sbin/ldconfig
 exit 0
 
+%ifarch x86_64
+
 #
 # ice-compilers package
 #
@@ -911,6 +909,8 @@ exit 0
 %doc %{rpmbuildfiles}/README.Linux
 %{pythondir}/Ice*
 %{pythondir}/Glacier2*
+
+%endif #x86_64
 
 %changelog
 * Fri Feb 17 2017 Bernard Normier <bernard@zeroc.com> 3.7a4
